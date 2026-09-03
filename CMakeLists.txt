@@ -6,6 +6,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
+add_library(storage STATIC
+    src/Storage/ProductRepository.cpp
+    src/Storage/TsvParser.cpp
+)
+
+target_include_directories(storage PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/Storage)
+
 qt_standard_project_setup(REQUIRES 6.10)
 
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/importedcontent/CMakeLists.txt")
@@ -30,7 +37,7 @@ set_target_properties(shopping-list PROPERTIES
 )
 
 target_link_libraries(shopping-list
-    PRIVATE Qt6::Quick
+    PRIVATE Qt6::Quick storage
 )
 
 install(TARGETS shopping-list
