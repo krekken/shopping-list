@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 add_library(storage STATIC
-    src/Storage/ProductRepository.cpp
     src/Storage/TsvParser.cpp
 )
 
