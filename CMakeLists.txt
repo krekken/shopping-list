@@ -6,11 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
-add_library(storage STATIC
-    src/Storage/TsvParser.cpp
-)
+add_library(storage INTERFACE)
 
-target_include_directories(storage PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/Storage)
+target_include_directories(storage INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/src/Storage)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
