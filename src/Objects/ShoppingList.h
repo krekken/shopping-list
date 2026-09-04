@@ -1,6 +1,7 @@
 #include "src/Objects/ListItem.h"
+#include <vector>
 
 struct ShoppingList {
   int id;
-  ListItem listItem;
+  std::vector<ListItem> listItems;
 };
