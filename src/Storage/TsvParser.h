@@ -22,6 +22,28 @@ public:
     return rows;
   }
 
+  static void write(std::vector<std::vector<std::string>> rows,
+                    std::string filename) {
+    std::ofstream stream(filename);
+    std::string line;
+
+    for (auto &row : rows) {
+      stream << joinLine(row) << "\n";
+    }
+  }
+
+  static std::string joinLine(std::vector<std::string> fields) {
+    std::string line;
+    for (int i = 0; fields.size(); i++) {
+      if (i > 0) {
+        line += '\t';
+      }
+      line += fields[i];
+    }
+
+    return line;
+  }
+
   static std::vector<std::string> splitLine(const std::string &line) {
     std::vector<std::string> fields;
     std::string field;

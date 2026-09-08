@@ -10,6 +10,7 @@
 class ProductRepository {
 public:
   static constexpr std::string_view FILENAME = "products.tsv";
+  std::vector<std::string> headers = {"id", "name", "description"};
 
   void load() {
     std::string filename = std::string(TsvParser::DATA_FOLDER) +
@@ -34,6 +35,17 @@ public:
     }
 
     throw std::runtime_error("product couldn't be found");
+  }
+
+  void save() {
+    std::vector<std::vector<std::string>> rows;
+    rows.push_back(headers);
+
+    for (const auto &product : products) {
+      std::vector<std::string> line = {std::to_string(product.id), product.name,
+                                       product.description};
+      rows.push_back(line);
+    }
   }
 
 private:
