@@ -40,7 +40,7 @@ private:
     auto &row = parsedData[i];
     int listId = std::stoi(row.at(0));
     ShoppingList &shoppingList = byId[listId];
-    ListItem listItem = listItemRepository.find(std::stoi(row.at(1)));
+    ListItem *listItem = listItemRepository.find(std::stoi(row.at(1)));
 
     shoppingList.listItems.push_back(listItem);
   }

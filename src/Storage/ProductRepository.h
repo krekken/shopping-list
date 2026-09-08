@@ -24,14 +24,14 @@ public:
     }
   }
 
-  Product find(int id) {
+  Product *find(int id) {
     if (products.empty()) {
       throw std::runtime_error("products are empty");
     }
 
-    for (const auto &product : products) {
+    for (auto &product : products) {
       if (product.id == id) {
-        return product;
+        return &product;
       }
     }
 

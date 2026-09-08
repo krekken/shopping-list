@@ -21,14 +21,14 @@ public:
     }
   }
 
-  ListItem find(int id) {
+  ListItem *find(int id) {
     if (listItems.empty()) {
       throw std::runtime_error("list items are empty");
     }
 
     for (auto &listItem : listItems) {
       if (listItem.id == id) {
-        return listItem;
+        return &listItem;
       }
     }
 
