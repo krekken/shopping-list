@@ -10,10 +10,9 @@
 
 class ProductRepository : public Repository {
 public:
-  static constexpr std::string_view FILENAME = "products.tsv";
   std::vector<std::string> headers = {"id", "name", "description"};
 
-  void load() {
+  void load() override {
     std::string filename =
         std::string(TsvParser::DATA_FOLDER) + std::string(getFilename());
     std::vector<std::vector<std::string>> parsedData =
@@ -22,6 +21,8 @@ public:
     for (size_t i = 1; i < parsedData.size(); ++i) {
       products.push_back(hydrate(parsedData[i]));
     }
+
+    loaded = true;
   }
 
   Product *find(int id) {

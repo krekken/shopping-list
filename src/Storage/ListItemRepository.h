@@ -10,16 +10,22 @@
 
 class ListItemRepository : public Repository {
 public:
-  void load() {
-    std::string fileName = std::string(TsvParser::DATA_FOLDER) +
-                           std::string(ProductRepository::FILENAME);
+  void load() override {
+    std::string fileName =
+        std::string(TsvParser::DATA_FOLDER) + std::string(getFilename());
 
     std::vector<std::vector<std::string>> parsedData =
         TsvParser::parse(fileName);
 
+    if (!productRepository.isLoaded()) {
+      productRepository.load();
+    }
+
     for (int i = 1; parsedData.size(); i++) {
       listItems.push_back(hydrate(parsedData.at(i)));
     }
+
+    loaded = true;
   }
 
   ListItem *find(int id) {

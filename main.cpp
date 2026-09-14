@@ -1,9 +1,14 @@
+#include "ListItemRepository.h"
+#include "src/Storage/ShoppingListRepository.h"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <cstdio>
 
 int main(int argc, char *argv[]) {
-  printf("hello world\n");
+  ProductRepository pRep;
+  ListItemRepository liRep(pRep);
+  ShoppingListRepository slRep(liRep);
+
+  slRep.load();
   return 0;
   QGuiApplication app(argc, argv);
 
