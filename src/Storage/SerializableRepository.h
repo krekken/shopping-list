@@ -8,6 +8,8 @@
 
 class SerializableRepository : public Repository {
 public:
+  virtual Serializable *find(int id) = 0;
+
   void save() override {
     std::vector<Serializable *> objects = getReposedObjects();
     std::vector<std::vector<std::string>> rows;

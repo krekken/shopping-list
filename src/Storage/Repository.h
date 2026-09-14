@@ -9,6 +9,8 @@ public:
   virtual ~Repository() = default;
   virtual void load() = 0;
   virtual void save() = 0;
+  virtual void create() = 0;
+  virtual void deleteItem(int id) = 0;
   virtual bool isLoaded() { return loaded; };
 
 protected:

@@ -4,6 +4,8 @@
 #include "ProductRepository.h"
 #include "SerializableRepository.h"
 #include "TsvParser.h"
+#include "src/Objects/Serializable.h"
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -28,14 +30,28 @@ public:
     loaded = true;
   }
 
-  ListItem *find(int id) {
+  ListItem *find(int id) override {
     if (listItems.empty()) {
       throw std::runtime_error("list items are empty");
     }
 
     for (auto &listItem : listItems) {
-      if (listItem.id == id) {
-        return &listItem;
+      if (listItem->id == id) {
+        return listItem.get();
+      }
+    }
+
+    throw std::runtime_error("list item was not found");
+  }
+
+  std::shared_ptr<ListItem> findShared(int id) {
+    if (listItems.empty()) {
+      throw std::runtime_error("list items are empty");
+    }
+
+    for (auto &listItem : listItems) {
+      if (listItem->id == id) {
+        return listItem;
       }
     }
 
@@ -54,22 +70,22 @@ protected:
   std::vector<Serializable *> getReposedObjects() override {
     std::vector<Serializable *> items;
     for (auto &listItem : listItems) {
-      items.push_back(&listItem);
+      items.push_back(listItem.get());
     }
     return items;
   };
 
 private:
-  std::vector<ListItem> listItems;
+  std::vector<std::shared_ptr<ListItem>> listItems;
 
   ProductRepository &productRepository;
 
-  ListItem hydrate(std::vector<std::string> row) {
-    ListItem listItem;
+  std::shared_ptr<ListItem> hydrate(std::vector<std::string> row) {
+    auto listItem = std::make_shared<ListItem>();
 
-    listItem.id = std::stoi(row.at(0));
-    listItem.product = productRepository.find(std::stoi(row.at(1)));
-    listItem.quantity = std::stoi(row.at(2));
+    listItem->id = std::stoi(row.at(0));
+    listItem->product = productRepository.findShared(std::stoi(row.at(1)));
+    listItem->quantity = std::stoi(row.at(2));
 
     return listItem;
   }
