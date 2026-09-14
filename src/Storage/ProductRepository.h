@@ -53,7 +53,7 @@ protected:
   std::string_view getFilename() const override { return "products.tsv"; };
   std::vector<std::string> getHeaders() override {
     return {"id", "name", "description"};
-  }
+  };
 
 private:
   std::vector<Product> products;

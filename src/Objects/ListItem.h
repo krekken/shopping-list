@@ -9,6 +9,7 @@ public:
   int id;
   Product *product;
   int quantity;
+
   std::vector<std::string> getAsStringVector() override {
     return {std::to_string(id), std::to_string(product->id),
             std::to_string(quantity)};

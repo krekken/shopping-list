@@ -1,4 +1,5 @@
 #pragma once
+
 #include "src/Objects/Serializable.h"
 #include <string>
 #include <vector>
@@ -9,7 +10,8 @@ public:
   std::string name;
   std::string description;
   std::string image; // unused for now
+
   std::vector<std::string> getAsStringVector() override {
-    return {"id", "name", "description"};
+    return {std::to_string(id), name, description};
   };
 };

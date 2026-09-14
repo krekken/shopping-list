@@ -2,12 +2,13 @@
 
 #include "../Objects/ListItem.h"
 #include "ProductRepository.h"
+#include "Repository.h"
 #include "TsvParser.h"
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-class ListItemRepository {
+class ListItemRepository : public Repository {
 public:
   void load() {
     std::string fileName = std::string(TsvParser::DATA_FOLDER) +
@@ -37,6 +38,12 @@ public:
 
   ListItemRepository(ProductRepository &productRepository)
       : productRepository(productRepository) {}
+
+protected:
+  std::string_view getFilename() const override { return "list_items.tsv"; };
+  std::vector<std::string> getHeaders() override {
+    return {"id", "id_product", "quantity"};
+  };
 
 private:
   std::vector<ListItem> listItems;
