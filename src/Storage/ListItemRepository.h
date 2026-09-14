@@ -21,7 +21,7 @@ public:
       productRepository.load();
     }
 
-    for (int i = 1; parsedData.size(); i++) {
+    for (int i = 1; i < parsedData.size(); i++) {
       listItems.push_back(hydrate(parsedData.at(i)));
     }
 

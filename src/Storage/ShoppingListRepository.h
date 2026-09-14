@@ -18,7 +18,7 @@ public:
     std::vector<std::vector<std::string>> parsedData =
         TsvParser::parse(filename);
 
-    for (int i = 1; parsedData.size(); i++) {
+    for (int i = 1; i < parsedData.size(); i++) {
       hydrate(byId, parsedData, i);
     }
 
