@@ -1,3 +1,4 @@
+#include "../Objects/Serializable.h"
 #include "../Objects/ShoppingList.h"
 #include "ListItemRepository.h"
 #include "Repository.h"

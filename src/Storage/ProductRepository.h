@@ -1,14 +1,14 @@
 #pragma once
 
 #include "../Objects/Product.h"
-#include "Repository.h"
+#include "SerializableRepository.h"
 #include "TsvParser.h"
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
 
-class ProductRepository : public Repository {
+class ProductRepository : public SerializableRepository {
 public:
   std::vector<std::string> headers = {"id", "name", "description"};
 
@@ -39,21 +39,19 @@ public:
     throw std::runtime_error("product couldn't be found");
   }
 
-  void save() {
-    std::vector<std::vector<std::string>> rows;
-    rows.push_back(getHeaders());
-
-    for (const auto &product : products) {
-      std::vector<std::string> line = {std::to_string(product.id), product.name,
-                                       product.description};
-      rows.push_back(line);
-    }
-  }
-
 protected:
   std::string_view getFilename() const override { return "products.tsv"; };
   std::vector<std::string> getHeaders() override {
     return {"id", "name", "description"};
+  };
+
+  std::vector<Serializable *> getReposedObjects() override {
+    std::vector<Serializable *> items;
+    for (auto &product : products) {
+      items.push_back(&product);
+    }
+
+    return items;
   };
 
 private:

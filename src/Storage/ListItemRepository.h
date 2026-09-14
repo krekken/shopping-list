@@ -2,13 +2,13 @@
 
 #include "../Objects/ListItem.h"
 #include "ProductRepository.h"
-#include "Repository.h"
+#include "SerializableRepository.h"
 #include "TsvParser.h"
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-class ListItemRepository : public Repository {
+class ListItemRepository : public SerializableRepository {
 public:
   void load() override {
     std::string fileName =
@@ -49,6 +49,14 @@ protected:
   std::string_view getFilename() const override { return "list_items.tsv"; };
   std::vector<std::string> getHeaders() override {
     return {"id", "id_product", "quantity"};
+  };
+
+  std::vector<Serializable *> getReposedObjects() override {
+    std::vector<Serializable *> items;
+    for (auto &listItem : listItems) {
+      items.push_back(&listItem);
+    }
+    return items;
   };
 
 private:
