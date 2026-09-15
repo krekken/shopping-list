@@ -98,7 +98,7 @@ public:
 protected:
   std::string_view getFilename() const override { return "list_items.tsv"; };
   std::vector<std::string> getHeaders() override {
-    return {"id", "id_product", "quantity"};
+    return {"id", "id_product", "quantity", "id_shopping_list"};
   };
 
   std::vector<Serializable *> getReposedObjects() override {
