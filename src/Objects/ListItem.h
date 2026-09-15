@@ -1,6 +1,7 @@
 #pragma once
 
 #include "src/Objects/Product.h"
+#include "src/Objects/ShoppingList.h"
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -11,6 +12,7 @@ public:
   int id;
   std::weak_ptr<Product> product;
   int quantity;
+  std::weak_ptr<ShoppingList> shoppingList;
 
   std::vector<std::string> getAsStringVector() override {
     auto p = product.lock();

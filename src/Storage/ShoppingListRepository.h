@@ -1,84 +1,101 @@
+#pragma once
+
 #include "../Objects/ShoppingList.h"
-#include "ListItemRepository.h"
 #include "Repository.h"
 #include "TsvParser.h"
-#include "src/Objects/ListItem.h"
+#include "src/Objects/Serializable.h"
+#include <algorithm>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
 class ShoppingListRepository : public Repository {
 public:
-  ShoppingListRepository(ListItemRepository &listItemRepository)
-      : listItemRepository(listItemRepository) {}
+  void deleteItem(int id) override {
+    auto iterator =
+        std::find_if(shoppingLists.begin(), shoppingLists.end(),
+                     [id](const std::shared_ptr<ShoppingList> shoppingList) {
+                       return shoppingList->id == id;
+                     });
 
-  void load() override {
-    std::string filename =
-        std::string(TsvParser::DATA_FOLDER) + std::string(getFilename());
-    std::unordered_map<int, ShoppingList> byId;
-
-    std::vector<std::vector<std::string>> parsedData =
-        TsvParser::parse(filename);
-
-    for (int i = 1; i < parsedData.size(); i++) {
-      hydrate(byId, parsedData, i);
+    if (iterator == shoppingLists.end()) {
+      throw std::runtime_error("item could not be found");
     }
 
-    for (auto &[id, loadedList] : byId) {
-      shoppingLists.push_back(loadedList);
+    shoppingLists.erase(iterator);
+  }
+
+  void load() override {
+    std::vector<std::vector<std::string>> parsedData =
+        TsvParser::parse(getPath());
+
+    for (int i = 1; i < parsedData.size(); i++) {
+      shoppingLists.push_back(hydrate(parsedData, i));
     }
 
     loaded = true;
   };
 
-  void save() override {
+  ShoppingList *find(int id) override {
     if (shoppingLists.empty()) {
-      throw std::runtime_error("Shopping lists are empty");
+      throw std::runtime_error("list items are empty");
     }
 
-    std::vector<std::vector<std::string>> lines;
-    lines.push_back(getHeaders());
-
-    for (auto &shoppingList : shoppingLists) {
-      for (auto &shoppingItem : shoppingList.listItems) {
-        lines.push_back({std::to_string(shoppingList.id), shoppingList.name,
-                         std::to_string(shoppingItem->id)});
+    for (auto &listItem : shoppingLists) {
+      if (listItem->id == id) {
+        return listItem.get();
       }
     }
 
-    TsvParser::write(lines, std::string(TsvParser::DATA_FOLDER) +
-                                std::string(getFilename()));
+    throw std::runtime_error("shopping list was not found");
+  }
+
+  std::shared_ptr<ShoppingList> findShared(int id) {
+    if (shoppingLists.empty()) {
+      throw std::runtime_error("shopping list are empty");
+    }
+
+    for (auto &listItem : shoppingLists) {
+      if (listItem->id == id) {
+        return listItem;
+      }
+    }
+
+    throw std::runtime_error("shopping list was not found");
   }
 
 protected:
+  std::vector<Serializable *> getReposedObjects() override {
+    std::vector<Serializable *> items;
+
+    for (auto &shoppingList : shoppingLists) {
+      items.push_back(shoppingList.get());
+    }
+
+    return items;
+  }
+
   std::string_view getFilename() const override {
     return "shopping_lists.tsv";
   };
 
-  std::vector<std::string> getHeaders() override {
-    return {"id", "name", "id_list_item"};
-  }
+  std::vector<std::string> getHeaders() override { return {"id", "name"}; }
 
 private:
-  std::vector<ShoppingList> shoppingLists;
+  std::vector<std::shared_ptr<ShoppingList>> shoppingLists;
 
-  ListItemRepository &listItemRepository;
-
-  void hydrate(std::unordered_map<int, ShoppingList> &byId,
-               std::vector<std::vector<std::string>> &parsedData, int &i) {
+  std::shared_ptr<ShoppingList>
+  hydrate(std::vector<std::vector<std::string>> &parsedData, int &i) {
     auto &row = parsedData[i];
     int listId = std::stoi(row.at(0));
 
-    ShoppingList &shoppingList = byId[listId];
-    if (!listItemRepository.isLoaded()) {
-      listItemRepository.load();
-    }
-    ListItem *listItem = listItemRepository.find(std::stoi(row.at(1)));
+    auto shoppingList = std::make_shared<ShoppingList>();
 
-    shoppingList.id = std::stoi(row.at(0));
-    shoppingList.name = row.at(1);
-    shoppingList.listItems.push_back(listItem);
+    shoppingList->id = std::stoi(row.at(0));
+    shoppingList->name = row.at(1);
+
+    return shoppingList;
   }
 };

@@ -1,24 +1,33 @@
 #pragma once
 
 #include "../Objects/Product.h"
-#include "SerializableRepository.h"
+#include "Repository.h"
 #include "TsvParser.h"
 #include "src/Objects/Serializable.h"
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
 
-class ProductRepository : public SerializableRepository {
+class ProductRepository : public Repository {
 public:
+  void deleteItem(int id) override {
+    auto iterator = std::find_if(
+        products.begin(), products.end(),
+        [id](const std::shared_ptr<Product> &p) { return p->id == id; });
+    if (iterator == products.end()) {
+      throw std::runtime_error("product couldn't be found");
+    }
+    products.erase(iterator);
+  }
+
   std::vector<std::string> headers = {"id", "name", "description"};
 
   void load() override {
-    std::string filename =
-        std::string(TsvParser::DATA_FOLDER) + std::string(getFilename());
     std::vector<std::vector<std::string>> parsedData =
-        TsvParser::parse(filename);
+        TsvParser::parse(getPath());
 
     for (size_t i = 1; i < parsedData.size(); ++i) {
       products.push_back(hydrate(parsedData[i]));

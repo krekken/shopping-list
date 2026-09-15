@@ -1,14 +1,10 @@
-#include "ListItemRepository.h"
-#include "src/Storage/ShoppingListRepository.h"
+#include "src/Services/Bootstrap.h"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[]) {
-  ProductRepository pRep;
-  ListItemRepository liRep(pRep);
-  ShoppingListRepository slRep(liRep);
-
-  slRep.load();
+  Bootstrap bootstrap;
+  bootstrap.init();
   return 0;
   QGuiApplication app(argc, argv);
 

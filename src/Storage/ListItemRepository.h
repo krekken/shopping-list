@@ -1,26 +1,47 @@
 #pragma once
 
-#include "../Objects/ListItem.h"
 #include "ProductRepository.h"
-#include "SerializableRepository.h"
+#include "Repository.h"
+#include "ShoppingListRepository.h"
 #include "TsvParser.h"
+#include "src/Objects/ListItem.h"
 #include "src/Objects/Serializable.h"
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-class ListItemRepository : public SerializableRepository {
+class ListItemRepository : public Repository {
 public:
-  void load() override {
-    std::string fileName =
-        std::string(TsvParser::DATA_FOLDER) + std::string(getFilename());
+  ListItemRepository(ProductRepository &productRepository,
+                     ShoppingListRepository &shoppingListRepository)
+      : productRepository(productRepository),
+        shoppingListRepository(shoppingListRepository) {}
 
+  void deleteItem(int id) override {
+    auto iterator =
+        std::find_if(listItems.begin(), listItems.end(),
+                     [id](const std::shared_ptr<ListItem> listItem) {
+                       return listItem->id == id;
+                     });
+    if (iterator == listItems.end()) {
+      throw std::runtime_error("item could not be found");
+    }
+
+    listItems.erase(iterator);
+  }
+
+  void load() override {
     std::vector<std::vector<std::string>> parsedData =
-        TsvParser::parse(fileName);
+        TsvParser::parse(getPath());
 
     if (!productRepository.isLoaded()) {
       productRepository.load();
+    }
+
+    if (!shoppingListRepository.isLoaded()) {
+      shoppingListRepository.load();
     }
 
     for (int i = 1; i < parsedData.size(); i++) {
@@ -58,8 +79,21 @@ public:
     throw std::runtime_error("list item was not found");
   }
 
-  ListItemRepository(ProductRepository &productRepository)
-      : productRepository(productRepository) {}
+  std::vector<ListItem *> findForList(int listId) {
+    if (listItems.empty()) {
+      throw std::runtime_error("list items are empty");
+    }
+
+    std::vector<ListItem *> filteredListItems;
+
+    for (auto &listItem : listItems) {
+      if (listItem->shoppingList.lock()->id == listId) {
+        filteredListItems.push_back(listItem.get());
+      }
+    }
+
+    return filteredListItems;
+  };
 
 protected:
   std::string_view getFilename() const override { return "list_items.tsv"; };
@@ -79,6 +113,7 @@ private:
   std::vector<std::shared_ptr<ListItem>> listItems;
 
   ProductRepository &productRepository;
+  ShoppingListRepository &shoppingListRepository;
 
   std::shared_ptr<ListItem> hydrate(std::vector<std::string> row) {
     auto listItem = std::make_shared<ListItem>();
@@ -86,7 +121,20 @@ private:
     listItem->id = std::stoi(row.at(0));
     listItem->product = productRepository.findShared(std::stoi(row.at(1)));
     listItem->quantity = std::stoi(row.at(2));
+    listItem->shoppingList =
+        shoppingListRepository.findShared(std::stoi(row.at(3)));
 
     return listItem;
+  }
+
+  ListItem *findComposite(int productId, int listId) {
+    for (auto &listItem : listItems) {
+      if (listItem->product.lock()->id == productId &&
+          listItem->shoppingList.lock()->id == listId) {
+        return listItem.get();
+      }
+    }
+
+    return nullptr;
   }
 };

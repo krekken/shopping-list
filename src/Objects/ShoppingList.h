@@ -1,12 +1,14 @@
 #pragma once
 
-#include "src/Objects/ListItem.h"
+#include "src/Objects/Serializable.h"
 #include <string>
-#include <vector>
 
-class ShoppingList {
+class ShoppingList : public Serializable {
 public:
   int id;
   std::string name;
-  std::vector<ListItem *> listItems;
+
+  std::vector<std::string> getAsStringVector() override {
+    return {std::to_string(id), name};
+  }
 };
