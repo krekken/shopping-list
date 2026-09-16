@@ -101,10 +101,10 @@ protected:
     return {"id", "id_product", "quantity", "id_shopping_list"};
   };
 
-  std::vector<Serializable *> getReposedObjects() override {
-    std::vector<Serializable *> items;
+  std::vector<std::shared_ptr<Serializable>> getReposedObjects() override {
+    std::vector<std::shared_ptr<Serializable>> items;
     for (auto &listItem : listItems) {
-      items.push_back(listItem.get());
+      items.push_back(listItem);
     }
     return items;
   };

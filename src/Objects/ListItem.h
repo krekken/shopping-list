@@ -9,7 +9,6 @@
 
 class ListItem : public Serializable {
 public:
-  int id;
   std::weak_ptr<Product> product;
   int quantity;
   std::weak_ptr<ShoppingList> shoppingList;

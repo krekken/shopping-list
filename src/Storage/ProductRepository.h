@@ -13,6 +13,13 @@
 
 class ProductRepository : public Repository {
 public:
+  void create(std::string name, std::string description) {
+    std::shared_ptr<Product> product =
+        hydrate({std::to_string(getAutoIncrement()), name, description});
+
+    products.push_back(product);
+  }
+
   void deleteItem(int id) override {
     auto iterator = std::find_if(
         products.begin(), products.end(),
@@ -60,10 +67,10 @@ protected:
     return {"id", "name", "description"};
   };
 
-  std::vector<Serializable *> getReposedObjects() override {
-    std::vector<Serializable *> items;
+  std::vector<std::shared_ptr<Serializable>> getReposedObjects() override {
+    std::vector<std::shared_ptr<Serializable>> items;
     for (auto &product : products) {
-      items.push_back(product.get());
+      items.push_back(product);
     }
     return items;
   }

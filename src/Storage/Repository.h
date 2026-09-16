@@ -2,6 +2,7 @@
 
 #include "TsvParser.h"
 #include "src/Objects/Serializable.h"
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -14,7 +15,7 @@ public:
   virtual Serializable *find(int id) = 0;
 
   void save() {
-    std::vector<Serializable *> objects = getReposedObjects();
+    std::vector<std::shared_ptr<Serializable>> objects = getReposedObjects();
     std::vector<std::vector<std::string>> rows;
 
     if (objects.empty()) {
@@ -41,6 +42,23 @@ protected:
                        std::string(getFilename()));
   }
   virtual std::vector<std::string> getHeaders() = 0;
-  virtual std::vector<Serializable *> getReposedObjects() = 0;
+  virtual std::vector<std::shared_ptr<Serializable>> getReposedObjects() = 0;
+
+  int getAutoIncrement() {
+    std::vector<std::shared_ptr<Serializable>> objects = getReposedObjects();
+    if (objects.empty()) {
+      return 1;
+    }
+
+    int autoIncrement = 0;
+
+    for (auto &object : objects) {
+      autoIncrement = std::max(autoIncrement, object->id);
+    }
+
+    autoIncrement++;
+
+    return autoIncrement;
+  }
   bool loaded = false;
 };

@@ -5,7 +5,6 @@
 
 class ShoppingList : public Serializable {
 public:
-  int id;
   std::string name;
 
   std::vector<std::string> getAsStringVector() override {
