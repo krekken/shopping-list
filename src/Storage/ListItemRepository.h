@@ -19,6 +19,16 @@ public:
       : productRepository(productRepository),
         shoppingListRepository(shoppingListRepository) {}
 
+  void create(int productId, int quantity, int listId) {
+    std::shared_ptr<ListItem> listItem = hydrate({
+        std::to_string(getAutoIncrement()),
+        std::to_string(productId),
+        std::to_string(listId),
+    });
+
+    listItems.push_back(listItem);
+  }
+
   void deleteItem(int id) override {
     auto iterator =
         std::find_if(listItems.begin(), listItems.end(),

@@ -13,6 +13,13 @@
 
 class ShoppingListRepository : public Repository {
 public:
+  void create(std::string name) {
+    std::shared_ptr<ShoppingList> shoppingList =
+        hydrate({std::to_string(getAutoIncrement()), name});
+
+    shoppingLists.push_back(shoppingList);
+  }
+
   void deleteItem(int id) override {
     auto iterator =
         std::find_if(shoppingLists.begin(), shoppingLists.end(),
@@ -32,7 +39,7 @@ public:
         TsvParser::parse(getPath());
 
     for (int i = 1; i < parsedData.size(); i++) {
-      shoppingLists.push_back(hydrate(parsedData, i));
+      shoppingLists.push_back(hydrate(parsedData.at(i)));
     }
 
     loaded = true;
@@ -86,13 +93,8 @@ protected:
 private:
   std::vector<std::shared_ptr<ShoppingList>> shoppingLists;
 
-  std::shared_ptr<ShoppingList>
-  hydrate(std::vector<std::vector<std::string>> &parsedData, int &i) {
-    auto &row = parsedData[i];
-    int listId = std::stoi(row.at(0));
-
+  std::shared_ptr<ShoppingList> hydrate(std::vector<std::string> row) {
     auto shoppingList = std::make_shared<ShoppingList>();
-
     shoppingList->id = std::stoi(row.at(0));
     shoppingList->name = row.at(1);
 
