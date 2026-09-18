@@ -20,6 +20,11 @@ public:
     shoppingLists.push_back(shoppingList);
   }
 
+  void update(int id, std::string name) {
+    ShoppingList *shoppingList = find(id);
+    shoppingList->name = name;
+  }
+
   void deleteItem(int id) override {
     auto iterator =
         std::find_if(shoppingLists.begin(), shoppingLists.end(),

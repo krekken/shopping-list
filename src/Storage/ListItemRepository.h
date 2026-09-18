@@ -23,10 +23,22 @@ public:
     std::shared_ptr<ListItem> listItem = hydrate({
         std::to_string(getAutoIncrement()),
         std::to_string(productId),
+        std::to_string(quantity),
         std::to_string(listId),
     });
 
     listItems.push_back(listItem);
+  }
+
+  void update(int id, int quantity) {
+    if (quantity == 0) {
+      deleteItem(id);
+
+      return;
+    }
+
+    ListItem *listItem = find(id);
+    listItem->quantity = quantity;
   }
 
   void deleteItem(int id) override {

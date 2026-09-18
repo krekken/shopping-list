@@ -20,6 +20,12 @@ public:
     products.push_back(product);
   }
 
+  void update(int id, std::string name, std::string description) {
+    Product *product = find(id);
+    product->name = name;
+    product->description = description;
+  }
+
   void deleteItem(int id) override {
     auto iterator = std::find_if(
         products.begin(), products.end(),
@@ -27,6 +33,7 @@ public:
     if (iterator == products.end()) {
       throw std::runtime_error("product couldn't be found");
     }
+
     products.erase(iterator);
   }
 
@@ -49,6 +56,7 @@ public:
         return product.get();
       }
     }
+
     throw std::runtime_error("product couldn't be found");
   }
 
