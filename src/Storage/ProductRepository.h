@@ -13,17 +13,21 @@
 
 class ProductRepository : public Repository {
 public:
-  void create(std::string name, std::string description) {
+  Product *create(std::string name, std::string description) {
     std::shared_ptr<Product> product =
         hydrate({std::to_string(getAutoIncrement()), name, description});
 
     products.push_back(product);
+
+    return product.get();
   }
 
-  void update(int id, std::string name, std::string description) {
+  Product *update(int id, std::string name, std::string description) {
     Product *product = find(id);
     product->name = name;
     product->description = description;
+
+    return product;
   }
 
   void deleteItem(int id) override {

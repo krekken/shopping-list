@@ -117,6 +117,17 @@ public:
     return filteredListItems;
   };
 
+  ListItem *findComposite(int productId, int listId) {
+    for (auto &listItem : listItems) {
+      if (listItem->product.lock()->id == productId &&
+          listItem->shoppingList.lock()->id == listId) {
+        return listItem.get();
+      }
+    }
+
+    return nullptr;
+  }
+
 protected:
   std::string_view getFilename() const override { return "list_items.tsv"; };
   std::vector<std::string> getHeaders() override {
@@ -149,16 +160,5 @@ private:
         shoppingListRepository.findShared(std::stoi(row.at(3)));
 
     return listItem;
-  }
-
-  ListItem *findComposite(int productId, int listId) {
-    for (auto &listItem : listItems) {
-      if (listItem->product.lock()->id == productId &&
-          listItem->shoppingList.lock()->id == listId) {
-        return listItem.get();
-      }
-    }
-
-    return nullptr;
   }
 };
