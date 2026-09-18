@@ -69,9 +69,11 @@ protected:
 
   std::vector<std::shared_ptr<Serializable>> getReposedObjects() override {
     std::vector<std::shared_ptr<Serializable>> items;
+
     for (auto &product : products) {
       items.push_back(product);
     }
+
     return items;
   }
 

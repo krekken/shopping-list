@@ -67,11 +67,11 @@ public:
   }
 
 protected:
-  std::vector<Serializable *> getReposedObjects() override {
-    std::vector<Serializable *> items;
+  std::vector<std::shared_ptr<Serializable>> getReposedObjects() override {
+    std::vector<std::shared_ptr<Serializable>> items;
 
     for (auto &shoppingList : shoppingLists) {
-      items.push_back(shoppingList.get());
+      items.push_back(shoppingList);
     }
 
     return items;

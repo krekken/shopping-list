@@ -34,10 +34,11 @@ public:
 
   static std::string joinLine(std::vector<std::string> fields) {
     std::string line;
-    for (int i = 0; fields.size(); i++) {
+    for (int i = 0; i < fields.size(); i++) {
       if (i > 0) {
         line += '\t';
       }
+
       line += fields[i];
     }
 
